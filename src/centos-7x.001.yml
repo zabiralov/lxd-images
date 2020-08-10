@@ -115,6 +115,7 @@ packages:
       - hostname
       action: install
 
+scripts:
   - trigger: post-packages
     action: |-
       #!/bin/sh
