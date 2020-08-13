@@ -1,6 +1,6 @@
 ---
 
-# Time-stamp: <2020-08-12 01:27:46 azabiralov>
+# Time-stamp: <2020-08-14 01:18:13 azabiralov>
 
 image:
   distribution: centos
@@ -77,7 +77,7 @@ files:
       AuthorizedKeysFile                .ssh/authorized_keys
       PasswordAuthentication            yes
       PermitEmptyPasswords              yes
-      PermitRootPassword                yes
+      PermitRootLogin                   yes
       PasswordAuthentication            yes
       ChallengeResponseAuthentication   no
       KerberosAuthentication            no
@@ -104,26 +104,32 @@ packages:
   cleanup: true
   sets:
     - packages:
+      - NetworkManager
+      - NetworkManager-tui
       - bash-completion
       - epel-release
+      - hostname
       - iproute
       - iputils
+      - less
+      - lsof
+      - man
+      - man-pages
       - openssh-server
       - passwd
       - policycoreutils
       - rootfiles
       - vim
-      - hostname
       action: install
 
-scripts:
+actions:
   - trigger: post-packages
     action: |-
       #!/bin/sh
       #
-      echo '------------------------------------------------------------------------'
+      echo '--------------------------'
       echo 'start post-packages script'
-      echo '------------------------------------------------------------------------'
+      echo '--------------------------'
 
       set -eux
       
@@ -132,10 +138,10 @@ scripts:
       
       sed -i '/^session.*pam_loginuid.so/s/^session/# session/' /etc/pam.d/*
       
-      echo -n 'q' | passwd --stdin root
+      passwd -d root
 
       set +x
 
-      echo '------------------------------------------------------------------------'
+      echo '-----------------------------'
       echo 'post-packages script complete'
-      echo '------------------------------------------------------------------------'
+      echo '-----------------------------'

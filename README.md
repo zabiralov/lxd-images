@@ -12,12 +12,12 @@ Build examples:
 
 Centos 7/amd64:
 ```
-make build_c7
+make centos-7
 ```
 
 Centos 8/amd64:
 ```
-make build_c8
+make centos-8
 ```
 
 Clean builded images:

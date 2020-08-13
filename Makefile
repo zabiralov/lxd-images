@@ -1,6 +1,6 @@
 # 
 
-# Time-stamp: <2020-08-12 02:25:15 azabiralov>
+# Time-stamp: <2020-08-14 00:33:30 azabiralov>
 
 BUILDER = /home/azabiralov/Code/go/bin/distrobuilder
 BUILD_TYPE = --type=unified
@@ -11,27 +11,27 @@ IMAGES_DIR = ./images/
 .PHONY: clean all
 
 
-build_c7:
-		echo '------------------------'
-		echo 'Build Centos 7 image ...'
-		echo '------------------------'
+centos-7:
+		@echo '------------------------'
+		@echo 'Build Centos 7 image ...'
+		@echo '------------------------'
 		sudo $(BUILDER) --cache-dir $(CACHE_DIR) build-lxd $(BUILD_TYPE) $(BUILD_COMPRESSION) src/centos-7x.current.yml $(IMAGES_DIR)
-		echo '---------------'
-		echo 'Build complete!'
-		echo '---------------'
+		@echo '---------------'
+		@echo 'Build complete!'
+		@echo '---------------'
 
 
-build_c8:
-		echo '------------------------'
-		echo 'Build Centos 8 image ...'
-		echo '------------------------'
+centos-8:
+		@echo '------------------------'
+		@echo 'Build Centos 8 image ...'
+		@echo '------------------------'
 		sudo $(BUILDER) --cache-dir $(CACHE_DIR) build-lxd $(BUILD_TYPE) $(BUILD_COMPRESSION) src/centos-8x.current.yml $(IMAGES_DIR)
-		echo '---------------'
-		echo 'Build complete!'
-		echo '---------------'
+		@echo '---------------'
+		@echo 'Build complete!'
+		@echo '---------------'
 
 
-all: build_c7 build_c8
+all: centos-7 centos-8
 
 
 clean:
