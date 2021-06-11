@@ -1,14 +1,15 @@
 # 
 
-# Time-stamp: <2020-08-14 00:33:30 azabiralov>
+# Time-stamp: <2021-06-12 00:43:54 azabiralov>
 
-BUILDER = /home/azabiralov/Code/go/bin/distrobuilder
+SHELL = /bin/bash
+BUILDER = distrobuilder
 BUILD_TYPE = --type=unified
 BUILD_COMPRESSION = --compression=bzip2
 CACHE_DIR = ./cache/
 IMAGES_DIR = ./images/
 
-.PHONY: clean all
+.PHONY: clean centos ubuntu
 
 
 centos-7:
@@ -31,8 +32,19 @@ centos-8:
 		@echo '---------------'
 
 
-all: centos-7 centos-8
+focal:
+		@echo '----------------------------'
+		@echo 'Build Ubuntu Focal image ...'
+		@echo '----------------------------'
+		sudo $(BUILDER) --cache-dir $(CACHE_DIR) build-lxd $(BUILD_TYPE) $(BUILD_COMPRESSION) src/ubuntu-focal.current.yml $(IMAGES_DIR)
+		@echo '---------------'
+		@echo 'Build complete!'
+		@echo '---------------'
 
+
+centos: centos-7 centos-8
+
+ubuntu: focal
 
 clean:
 	rm -f images/*.tar*
