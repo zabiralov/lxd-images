@@ -1,6 +1,6 @@
 ---
 
-# Time-stamp: <2021-06-12 00:44:34 azabiralov>
+# Time-stamp: <2021-06-12 01:05:11 azabiralov>
 
 image:
   distribution: ubuntu
@@ -9,11 +9,12 @@ image:
 
 source:
   downloader: debootstrap
-  url: https://mirror.yandex.ru/ubuntu/
+  same_as: gutsy
+  url: http://archive.ubuntu.com/ubuntu
   keyserver: keyserver.ubuntu.com
   keys:
     - 0x790BC7277767219C42C86F933B4FE6ACC0B21F32
-    - 0xf6ecb3762474eda9d21b7022871920d1991bc93c
+    - 0xF6ECB3762474EDA9D21B7022871920D1991BC93C
 
 targets:
   lxc:
