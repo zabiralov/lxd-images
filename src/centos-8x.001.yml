@@ -1,6 +1,6 @@
 ---
 
-# Time-stamp: <2020-08-14 01:22:04 azabiralov>
+# Time-stamp: <2020-10-04 15:08:20 azabiralov>
 
 image:
   distribution: centos
@@ -137,8 +137,12 @@ actions:
       echo 0 > /selinux/enforce
       
       sed -i '/^session.*pam_loginuid.so/s/^session/# session/' /etc/pam.d/*
-      
+
+      # Disable password for root
       passwd -d root
+
+      # Fix python setup for DNF
+      ln -fs /usr/libexec/platform-python3.6 /usr/libexec/platform-python
 
       set +x
 
