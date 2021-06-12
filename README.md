@@ -4,20 +4,26 @@ lxd-images
 Deps:
 ---
 
-* distrobuilder
-* GNU Make
+* distrobuilder	<https://github.com/lxc/distrobuilder>
+* GNU Make <https://www.gnu.org/software/make/>
 
-Build examples:
+Build:
 ---
 
-Centos 7/amd64:
 ```
-make centos-7
+make DIST=<name>
 ```
 
-Centos 8/amd64:
+where <name> one of:
+
+- centos7
+- centos8
+- bionic
+- focal
+
+List builded images:
 ```
-make centos-8
+make list
 ```
 
 Clean builded images:

@@ -1,15 +1,14 @@
 ---
 
-# Time-stamp: <2021-06-12 13:15:36 azabiralov>
+# Time-stamp: <2021-06-12 14:34:05 azabiralov>
 
 image:
   distribution: ubuntu
-  release: focal
+  release: bionic
   architecture: amd64
 
 source:
   downloader: debootstrap
-  same_as: gutsy
   url: http://mirror.yandex.ru/ubuntu
   keyserver: keyserver.ubuntu.com
   keys:
@@ -25,12 +24,12 @@ targets:
       - type: all
         before: 5
         content: |-
-          lxc.include = LXC_TEMPLATE_CONFIG/ubuntu.common.conf
+          lxc.include = LXC_TEMPLATE_CONFIG/{{ image.distribution }}.common.conf
 
       - type: user
         before: 5
         content: |-
-          lxc.include = LXC_TEMPLATE_CONFIG/ubuntu.userns.conf
+          lxc.include = LXC_TEMPLATE_CONFIG/{{ image.distribution }}.userns.conf
 
       - type: all
         after: 4
@@ -44,7 +43,7 @@ targets:
 
       - type: all
         content: |-
-          lxc.arch = {{ image.architecture_kernel }}
+          lxc.arch = {{ image.architecture }}
 
 files:
   - name: hostname
@@ -113,7 +112,7 @@ packages:
   sets:
     - packages:
       - bash-completion
-      - bind9-dnsutils
+      - dnsutils
       - iputils-ping
       - iproute2
       - less
