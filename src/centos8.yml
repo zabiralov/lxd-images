@@ -1,6 +1,6 @@
 ---
 
-# Time-stamp: <2020-10-04 15:08:20 azabiralov>
+# Time-stamp: <2021-06-12 15:08:07 azabiralov>
 
 image:
   distribution: centos
@@ -19,18 +19,18 @@ source:
 targets:
   lxc:
     create-message: |
-        You just created a {{ image.description }} container.
+        You just created a {{ image.distribution }} container.
 
     config:
       - type: all
         before: 5
         content: |-
-          lxc.include = LXC_TEMPLATE_CONFIG/centos.common.conf
+          lxc.include = LXC_TEMPLATE_CONFIG/{{ image.distribution }}.common.conf
 
       - type: user
         before: 5
         content: |-
-          lxc.include = LXC_TEMPLATE_CONFIG/centos.userns.conf
+          lxc.include = LXC_TEMPLATE_CONFIG/{{ image.distribution }}.userns.conf
 
       - type: all
         after: 4
@@ -44,7 +44,7 @@ targets:
 
       - type: all
         content: |-
-          lxc.arch = {{ image.architecture_kernel }}
+          lxc.arch = {{ image.architecture }}
 
 files:
   - name: hostname
@@ -61,41 +61,39 @@ files:
     path: /etc/ssh/sshd_config
     generator: dump
     content: |-
-      Port                              22
+      AcceptEnv                         LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+      AcceptEnv                         LC_IDENTIFICATION LC_ALL LANGUAGE
+      AcceptEnv                         LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+      AcceptEnv                         XMODIFIERS
       AddressFamily                     any
-      ListenAddress                     0.0.0.0
-      ListenAddress                     ::
-      HostKey                           /etc/ssh/ssh_host_rsa_key
-      HostKey                           /etc/ssh/ssh_host_ecdsa_key
-      HostKey                           /etc/ssh/ssh_host_ed25519_key
-      SyslogFacility                    AUTHPRIV
-      PermitRootLogin                   yes
-      StrictModes                       no
-      MaxAuthTries                      6
-      MaxSessions                       10
-      PubkeyAuthentication              yes
-      AuthorizedKeysFile                .ssh/authorized_keys
-      PasswordAuthentication            yes
-      PermitEmptyPasswords              yes
-      PermitRootLogin                   yes
-      PasswordAuthentication            yes
-      ChallengeResponseAuthentication   no
-      KerberosAuthentication            no
-      GSSAPIAuthentication              no
-      UsePAM                            yes
       AllowAgentForwarding              yes
       AllowTcpForwarding                yes
+      AuthorizedKeysFile                .ssh/authorized_keys
+      ChallengeResponseAuthentication   no
+      GSSAPIAuthentication              no
       GatewayPorts                      yes
-      X11Forwarding                     yes
-      PrintMotd                         yes
+      HostKey                           /etc/ssh/ssh_host_ecdsa_key
+      HostKey                           /etc/ssh/ssh_host_ed25519_key
+      HostKey                           /etc/ssh/ssh_host_rsa_key
+      KerberosAuthentication            no
+      ListenAddress                     0.0.0.0
+      ListenAddress                     ::
+      MaxAuthTries                      6
+      MaxSessions                       10
+      PasswordAuthentication            no
+      PermitEmptyPasswords              no
+      PermitRootLogin                   no
+      Port                              22
       PrintLastLog                      yes
+      PrintMotd                         yes
+      PubkeyAuthentication              yes
+      StrictModes                       no
+      Subsystem                         sftp /usr/libexec/openssh/sftp-server
+      SyslogFacility                    AUTHPRIV
       TCPKeepAlive                      yes
       UseDNS                            no
-      AcceptEnv                         LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
-      AcceptEnv                         LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
-      AcceptEnv                         LC_IDENTIFICATION LC_ALL LANGUAGE
-      AcceptEnv                         XMODIFIERS
-      Subsystem                         sftp /usr/libexec/openssh/sftp-server
+      UsePAM                            yes
+      X11Forwarding                     yes
 
 
 packages:
