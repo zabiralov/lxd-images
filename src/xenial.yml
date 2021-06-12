@@ -1,0 +1,144 @@
+---
+
+# Time-stamp: <2021-06-12 14:54:27 azabiralov>
+
+image:
+  distribution: ubuntu
+  release: xenial
+  architecture: amd64
+
+source:
+  downloader: debootstrap
+  url: http://mirror.yandex.ru/ubuntu
+  keyserver: keyserver.ubuntu.com
+  keys:
+    - 0x790BC7277767219C42C86F933B4FE6ACC0B21F32
+    - 0xF6ECB3762474EDA9D21B7022871920D1991BC93C
+
+targets:
+  lxc:
+    create-message: |
+        You just created a {{ image.description }} container.
+
+    config:
+      - type: all
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/{{ image.distribution }}.common.conf
+
+      - type: user
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/{{ image.distribution }}.userns.conf
+
+      - type: all
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+
+      - type: user
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+
+      - type: all
+        content: |-
+          lxc.arch = {{ image.architecture }}
+
+files:
+  - name: hostname
+    path: /etc/hostname
+    generator: template
+    content: |-
+      {{ container.name }}.example.com
+
+  - name: hosts
+    path: /etc/hosts
+    generator: hosts
+
+
+  - name: 02recommends
+    path: /etc/apt/apt.conf.d/02recommends
+    generator: dump
+    content: |-
+      APT::Install-Recommends "false";
+      APT::Install-Suggests "false";
+
+
+  - name: sshd_config
+    path: /etc/ssh/sshd_config
+    generator: dump
+    content: |-
+      AcceptEnv                         LANG LC_*
+      AddressFamily                     any
+      AllowAgentForwarding              yes
+      AllowTcpForwarding                yes
+      ChallengeResponseAuthentication   no
+      GSSAPIAuthentication              no
+      GatewayPorts                      yes
+      KerberosAuthentication            no
+      ListenAddress                     0.0.0.0
+      ListenAddress                     ::
+      MaxAuthTries                      6
+      MaxSessions                       10
+      PasswordAuthentication            no
+      PasswordAuthentication            no
+      PermitEmptyPasswords              no
+      PermitRootLogin                   no
+      Port                              22
+      PrintLastLog                      yes
+      PrintMotd                         yes
+      PubkeyAuthentication              yes
+      StrictModes                       no
+      Subsystem	                        sftp /usr/lib/openssh/sftp-server
+      TCPKeepAlive                      yes
+      UseDNS                            no
+      UsePAM                            yes
+      X11Forwarding                     no
+
+
+repositories:
+  - name: sources.list
+    url: |-
+      deb http://mirror.yandex.ru/ubuntu {{ image.release }} main restricted universe multiverse
+      deb http://mirror.yandex.ru/ubuntu {{ image.release }}-updates main restricted universe multiverse
+      deb http://security.ubuntu.com/ubuntu {{ image.release }}-security main restricted universe multiverse
+
+
+packages:
+  manager: apt
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+      - bash-completion
+      - dnsutils
+      - iputils-ping
+      - iproute2
+      - less
+      - lsof
+      - tmux
+      - man-db
+      - tcpdump
+      - vim
+      action: install
+
+actions:
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      #
+      echo '--------------------------'
+      echo 'start post-packages script'
+      echo '--------------------------'
+
+      set -eux
+      
+      # Disable password for root
+      passwd -d root
+
+      set +x
+
+      echo '-----------------------------'
+      echo 'post-packages script complete'
+      echo '-----------------------------'
