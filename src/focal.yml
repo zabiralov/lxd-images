@@ -1,6 +1,6 @@
 ---
 
-# Time-stamp: <2021-06-12 13:56:40 azabiralov>
+# Time-stamp: <2021-06-13 01:30:55 azabiralov>
 
 image:
   distribution: ubuntu
@@ -12,8 +12,8 @@ source:
   url: http://mirror.yandex.ru/ubuntu
   keyserver: keyserver.ubuntu.com
   keys:
-    - 0x790BC7277767219C42C86F933B4FE6ACC0B21F32
-    - 0xF6ECB3762474EDA9D21B7022871920D1991BC93C
+    - 790BC7277767219C42C86F933B4FE6ACC0B21F32
+    - F6ECB3762474EDA9D21B7022871920D1991BC93C
 
 targets:
   lxc:

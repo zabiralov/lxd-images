@@ -1,6 +1,6 @@
 ---
 
-# Time-stamp: <2021-06-12 14:54:27 azabiralov>
+# Time-stamp: <2021-06-13 01:31:51 azabiralov>
 
 image:
   distribution: ubuntu
@@ -12,13 +12,13 @@ source:
   url: http://mirror.yandex.ru/ubuntu
   keyserver: keyserver.ubuntu.com
   keys:
-    - 0x790BC7277767219C42C86F933B4FE6ACC0B21F32
-    - 0xF6ECB3762474EDA9D21B7022871920D1991BC93C
+    - 790BC7277767219C42C86F933B4FE6ACC0B21F32
+    - F6ECB3762474EDA9D21B7022871920D1991BC93C
 
 targets:
   lxc:
     create-message: |
-        You just created a {{ image.description }} container.
+        You just created a {{ image.distribution }} container.
 
     config:
       - type: all
@@ -81,7 +81,6 @@ files:
       ListenAddress                     ::
       MaxAuthTries                      6
       MaxSessions                       10
-      PasswordAuthentication            no
       PasswordAuthentication            no
       PermitEmptyPasswords              no
       PermitRootLogin                   no
