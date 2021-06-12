@@ -1,9 +1,9 @@
 # 
 
-# Time-stamp: <2021-06-12 00:43:54 azabiralov>
+# Time-stamp: <2021-06-12 12:53:40 azabiralov>
 
 SHELL = /bin/bash
-BUILDER = distrobuilder
+BUILDER = distrobuilder --debug
 BUILD_TYPE = --type=unified
 BUILD_COMPRESSION = --compression=bzip2
 CACHE_DIR = ./cache/

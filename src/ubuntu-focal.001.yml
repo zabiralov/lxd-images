@@ -1,16 +1,16 @@
 ---
 
-# Time-stamp: <2021-06-12 01:05:11 azabiralov>
+# Time-stamp: <2021-06-12 13:15:36 azabiralov>
 
 image:
   distribution: ubuntu
   release: focal
-  architecture: x86_64
+  architecture: amd64
 
 source:
   downloader: debootstrap
   same_as: gutsy
-  url: http://archive.ubuntu.com/ubuntu
+  url: http://mirror.yandex.ru/ubuntu
   keyserver: keyserver.ubuntu.com
   keys:
     - 0x790BC7277767219C42C86F933B4FE6ACC0B21F32
@@ -98,6 +98,14 @@ files:
       X11Forwarding                     no
 
 
+repositories:
+  - name: sources.list
+    url: |-
+      deb http://mirror.yandex.ru/ubuntu {{ image.release }} main restricted universe multiverse
+      deb http://mirror.yandex.ru/ubuntu {{ image.release }}-updates main restricted universe multiverse
+      deb http://security.ubuntu.com/ubuntu {{ image.release }}-security main restricted universe multiverse
+
+
 packages:
   manager: apt
   update: true
@@ -105,18 +113,15 @@ packages:
   sets:
     - packages:
       - bash-completion
-      - dnsutils
-      - inetutils-ping
+      - bind9-dnsutils
+      - iputils-ping
       - iproute2
       - less
       - lsof
-      - man
+      - tmux
       - man-db
-      - ncdu
-      - nmap
       - tcpdump
       - vim
-
       action: install
 
 actions:
