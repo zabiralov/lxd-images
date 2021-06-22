@@ -1,0 +1,147 @@
+---
+
+# Time-stamp: <2021-06-12 17:07:57 azabiralov>
+
+image:
+  distribution: fedora
+  release: 34
+  architecture: x86_64
+
+source:
+  downloader: fedora-http
+  url: https://mirror.yandex.ru/fedora/linux/
+  keyserver: keyserver.ubuntu.com
+  keys:
+    - 6341AB2753D78A78A7C27BB124C6A8A7F4A80EB5
+    - C1DAC52D1664E8A4386DBA430946FCA2C105B9DE
+  # variant: netinst
+
+targets:
+  lxc:
+    create-message: |
+        You just created a {{ image.distribution }} container.
+
+    config:
+      - type: all
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/{{ image.distribution }}.common.conf
+
+      - type: user
+        before: 5
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/{{ image.distribution }}.userns.conf
+
+      - type: all
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/common.conf
+
+      - type: user
+        after: 4
+        content: |-
+          lxc.include = LXC_TEMPLATE_CONFIG/userns.conf
+
+      - type: all
+        content: |-
+          lxc.arch = {{ image.architecture }}
+
+files:
+  - name: hostname
+    path: /etc/hostname
+    generator: template
+    content: |-
+      {{ container.name }}.example.com
+
+  - name: hosts
+    path: /etc/hosts
+    generator: hosts
+
+  - name: sshd_config
+    path: /etc/ssh/sshd_config
+    generator: dump
+    content: |-
+      Port                              22
+      AddressFamily                     any
+      ListenAddress                     0.0.0.0
+      ListenAddress                     ::
+      HostKey                           /etc/ssh/ssh_host_rsa_key
+      HostKey                           /etc/ssh/ssh_host_ecdsa_key
+      HostKey                           /etc/ssh/ssh_host_ed25519_key
+      SyslogFacility                    AUTHPRIV
+      PermitRootLogin                   yes
+      StrictModes                       no
+      MaxAuthTries                      6
+      MaxSessions                       10
+      PubkeyAuthentication              yes
+      AuthorizedKeysFile                .ssh/authorized_keys
+      PasswordAuthentication            yes
+      PermitEmptyPasswords              yes
+      PermitRootLogin                   yes
+      PasswordAuthentication            yes
+      ChallengeResponseAuthentication   no
+      KerberosAuthentication            no
+      GSSAPIAuthentication              no
+      UsePAM                            yes
+      AllowAgentForwarding              yes
+      AllowTcpForwarding                yes
+      GatewayPorts                      yes
+      X11Forwarding                     yes
+      PrintMotd                         yes
+      PrintLastLog                      yes
+      TCPKeepAlive                      yes
+      UseDNS                            no
+      AcceptEnv                         LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+      AcceptEnv                         LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+      AcceptEnv                         LC_IDENTIFICATION LC_ALL LANGUAGE
+      AcceptEnv                         XMODIFIERS
+      Subsystem                         sftp /usr/libexec/openssh/sftp-server
+
+
+packages:
+  manager: dnf
+  update: true
+  cleanup: true
+  sets:
+    - packages:
+      - NetworkManager
+      - NetworkManager-tui
+      - bash-completion
+      - epel-release
+      - hostname
+      - iproute
+      - iputils
+      - less
+      - lsof
+      - man
+      - man-pages
+      - openssh-server
+      - passwd
+      - policycoreutils
+      - rootfiles
+      - vim
+      action: install
+
+actions:
+  - trigger: post-packages
+    action: |-
+      #!/bin/sh
+      #
+      echo '--------------------------'
+      echo 'start post-packages script'
+      echo '--------------------------'
+
+      set -eux
+      
+      mkdir -p /selinux
+      echo 0 > /selinux/enforce
+      
+      sed -i '/^session.*pam_loginuid.so/s/^session/# session/' /etc/pam.d/*
+      
+      passwd -d root
+
+      set +x
+
+      echo '-----------------------------'
+      echo 'post-packages script complete'
+      echo '-----------------------------'
