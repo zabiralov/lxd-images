@@ -2,4 +2,7 @@
 .*
 *_
 images/
+cache/
+*.tfstate
+*.tfstate.*
 
