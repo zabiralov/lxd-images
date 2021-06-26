@@ -1,4 +1,4 @@
-# Time-stamp: <2021-06-25 11:52:59 azabiralov>
+# Time-stamp: <2021-06-26 21:27:28 azabiralov>
 
 SHELL = /bin/bash
 BUILDER = distrobuilder --debug --cleanup=false
@@ -10,18 +10,22 @@ IMAGES_DIR = ./images/
 .PHONY: clean ls img
 
 
-$(D):
+$(d):
 	@echo '-----------------------'
-	@echo 'Build $(D) image ...'
+	@echo 'Build $(d) image ...'
 	@echo '-----------------------'
-	sudo $(BUILDER) --cache-dir $(CACHE_DIR) build-lxd $(BUILD_TYPE) $(BUILD_COMPRESSION) src/$(D).yml $(IMAGES_DIR)
+	sudo $(BUILDER) --cache-dir $(CACHE_DIR) build-lxd $(BUILD_TYPE) $(BUILD_COMPRESSION) src/$(d).yml $(IMAGES_DIR)
 	@echo '-----------------------'
-	@echo 'Build $(D) complete!'
+	@echo 'Build $(d) complete!'
 	@echo '-----------------------'
 
 
-$(DI):
-	lxc image import $(IMAGES_DIR)/*-$(DI)-*.tar.bz2 --alias $(DI)_mod
+$(i):
+	lxc image import $(IMAGES_DIR)/*-$(i)-*.tar.bz2 --alias $(i)_mod
+
+
+$(r):
+	lxc image delete $(r)_mod
 
 
 ls:

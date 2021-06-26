@@ -7,8 +7,6 @@ terraform {
 }
 
 provider "lxd" {
-	accept_remote_certificate = ""
-	generate_client_certificates = ""
 }
 
 resource "lxd_container" "focal1" {
@@ -21,6 +19,22 @@ resource "lxd_container" "focal1" {
 	}
 
 	limits = {
-		cpu = 2
+		cpu = 1
+		memory = "1GiB"
+	}
+}
+
+resource "lxd_container" "bionic1" {
+	name      = "bionic1"
+	image     = "bionic_mod"
+	ephemeral = false
+
+	config = {
+		"boot.autostart" = false
+	}
+
+	limits = {
+		cpu = 1
+		memory = "1GiB"
 	}
 }

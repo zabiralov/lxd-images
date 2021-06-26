@@ -1,6 +1,6 @@
 ---
 
-# Time-stamp: <2021-06-25 18:40:55 azabiralov>
+# Time-stamp: <2021-06-26 21:33:54 azabiralov>
 
 image:
   distribution: ubuntu
@@ -114,12 +114,16 @@ packages:
     - bash-completion
     - bind9-dnsutils
     - curl
+    - htop
+    - iftop
+    - iotop
     - iproute2
     - iputils-ping
     - isc-dhcp-client
     - less
     - lsof
     - man-db
+    - nload
     - openssh-client
     - openssh-server
     - python3-apt

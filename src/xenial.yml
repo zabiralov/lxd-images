@@ -1,6 +1,6 @@
 ---
 
-# Time-stamp: <2021-06-13 01:31:51 azabiralov>
+# Time-stamp: <2021-06-26 21:33:18 azabiralov>
 
 image:
   distribution: ubuntu
@@ -18,7 +18,7 @@ source:
 targets:
   lxc:
     create-message: |
-        You just created a {{ image.distribution }} container.
+        You just created a {{ image.description }} container.
 
     config:
       - type: all
@@ -57,8 +57,8 @@ files:
     generator: hosts
 
 
-  - name: 02recommends
-    path: /etc/apt/apt.conf.d/02recommends
+  - name: 02norecommends
+    path: /etc/apt/apt.conf.d/02norecommends
     generator: dump
     content: |-
       APT::Install-Recommends "false";
@@ -83,7 +83,7 @@ files:
       MaxSessions                       10
       PasswordAuthentication            no
       PermitEmptyPasswords              no
-      PermitRootLogin                   no
+      PermitRootLogin                   yes
       Port                              22
       PrintLastLog                      yes
       PrintMotd                         yes
@@ -96,12 +96,13 @@ files:
       X11Forwarding                     no
 
 
-repositories:
   - name: sources.list
-    url: |-
-      deb http://mirror.yandex.ru/ubuntu {{ image.release }} main restricted universe multiverse
-      deb http://mirror.yandex.ru/ubuntu {{ image.release }}-updates main restricted universe multiverse
-      deb http://security.ubuntu.com/ubuntu {{ image.release }}-security main restricted universe multiverse
+    path: /etc/apt/sources.list
+    generator: template
+    content: |-
+      deb http://mirror.yandex.ru/ubuntu xenial main restricted universe multiverse
+      deb http://mirror.yandex.ru/ubuntu xenial-updates main restricted universe multiverse
+      deb http://security.ubuntu.com/ubuntu xenial-security main restricted universe multiverse
 
 
 packages:
@@ -109,32 +110,96 @@ packages:
   update: true
   cleanup: true
   sets:
-    - packages:
-      - bash-completion
-      - dnsutils
-      - iputils-ping
-      - iproute2
-      - less
-      - lsof
-      - tmux
-      - man-db
-      - tcpdump
-      - vim
-      action: install
+  - packages:
+    - bash-completion
+    - curl
+    - dnsutils
+    - htop
+    - iftop
+    - iotop
+    - iproute2
+    - iputils-ping
+    - isc-dhcp-client
+    - less
+    - lsof
+    - man-db
+    - nload
+    - openssh-client
+    - openssh-server
+    - python3-apt
+    - tmux
+    - vim
+    - wget
+    action: install
 
 actions:
   - trigger: post-packages
     action: |-
-      #!/bin/sh
+      #!/bin/bash
       #
       echo '--------------------------'
       echo 'start post-packages script'
       echo '--------------------------'
 
       set -eux
-      
-      # Disable password for root
-      passwd -d root
+
+      # Additional skel files
+      install -m 0700 -d /etc/skel/.ssh
+
+      cat<<END | base64 -d > /etc/skel/.ssh/authorized_keys
+      c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFDQVFEREdGZ1luUnIvbXRxZ1Bwd1B2
+      VDkwd1BWMGxVei9zTlk4UUZhV2M3ODBBVXpTQ0MvTVBCS0I5dm5LN2dKYy9PZ2hoMnhYMkV3THR0
+      L2FmZ3h5RWxmcnk2NDJuSWo1bThMNFZUZGNVZHc2T095RmxmM2xwQjJVTlFCSTZ6UWd3V3l6b0NN
+      bXNvaVhkZ2g4T2Q3bVlZbDc4SjNBY3JUblpqOCsrVXN3U1pWbG13YjhMTzZxQm1RR21nTWdaVjIr
+      dk9uRFYxaU1ieUlLUFI3dlVNbFBqUjg0TWVTRU1ydDhCTXgybzNuS290d0lYRkk4WGdIWVBraDRp
+      azZWUlBpSkk3MVZGNFlDaWxCRFlYUTlJN0F2cGcxY2JnUTBmT0tOR2F2ZWd0RGFMR3Bod2o0RGFt
+      Um9YMkJNeXpaSFREcW5tcW5FTURZQ1hOdFNVWXBsRmloYmFCWUtEanA4RjRwM1JUZkcxdkFROElF
+      dGFkRy8wVkNaMGJyWmlJTXJjbGlQTzRuQnNpcko4cm82OFhNcjFGaTZMTlExTitKaCs2VEZnek9u
+      VUhlOXlRVmY4SCtCcldNVWk1Qy9MaGM4cmJyYkVBOUkvbzcvaWpuK1plOHFURzRVMWpja0lOM3Mz
+      NUZiNzZLNWoybVB6bVRINVo1RXhoNEFWSHh4VHM4RnlkU0s2cGpRRlRoYmdPbFRkTnBUUC9DbVVM
+      SHpwczBjdWVXV3RwanR2anJsSm1saDRFS1BwblhzeXA5dStRR0xqSjZyNkxtZlc1WlQ5a21MNGRr
+      NXp3U0dRUUZDZi85TkxwRG5wQnFmcktFYjNyZWcza3RHMW9XTXFYMnNEL0E5alpUNjQvRnhEaHND
+      cVdvcnhQUUtZRlhibHk4c1hLNTRramNQaFZnaDhndUhhQmo5Q3c9PSBhemFiaXJhbG92X2hvbWU=
+      END
+
+      # Add regular user
+      us='azabiralov'
+      useradd -u 1000 -UG sudo -ms /bin/bash "${us}"
+      pw="$(openssl rand -base64 15)"
+      echo "${us}:${pw}" | chpasswd - && echo "${pw}" > "/home/${us}/pw"
+      ls -lh "/home/${us}/pw"
+
+      # Set root passw
+      pw="$(openssl rand -base64 15)"
+      echo "root:${pw}" | chpasswd - && echo "${pw}" > /root/pw
+      ls -lh /root/pw
+      unset pw
+
+      # Add ssh key
+      install -m 0700 -d /root/.ssh
+      cat "/home/${us}/.ssh/authorized_keys" > /root/.ssh/authorized_keys
+      ls -lh /root/.ssh/authorized_keys
+
+      # Install dhclient service
+      cat<<END > /etc/systemd/system/dhclient.service
+      [Unit]
+      Description      = ISC DHCP client
+      After            = network.target
+      [Service]
+      Type             = forking
+      ExecStart        = /sbin/dhclient -v -i eth0
+      ExecReload       = /usr/bin/pkill -HUP -x dhclient
+      PIDFile          = /var/run/dhclient.pid
+      [Install]
+      WantedBy         = multi-user.target
+      END
+
+      ls -lh /etc/systemd/system/dhclient.service
+
+      # Enable dhclient.service
+      ln -s /etc/systemd/system/dhclient.service /etc/systemd/system/multi-user.target.wants/dhclient.service
+
+      ls -lh /etc/systemd/system/multi-user.target.wants/dhclient.service
 
       set +x
 
